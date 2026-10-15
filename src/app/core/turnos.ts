@@ -126,8 +126,9 @@ export function ventanaMensualOperativa(mes: string): VentanaTiempo {
 
   return {
     desde: `${firstDay}T06:00:00${PERU_OFFSET}`,
-    // El backend usa <= :hasta: excluir las 06:00 exactas del nuevo mes.
-    hasta: `${nextDay}T05:59:59.999${PERU_OFFSET}`,
+    // El nuevo endpoint /consulta utiliza rango semiabierto [desde, hasta).
+    // Esto incluye el último milisegundo del turno C, sin incluir el siguiente mes.
+    hasta: `${nextDay}T06:00:00${PERU_OFFSET}`,
     descripcion: `Mes operativo: ${label} · 06:00–06:00`
   };
 }
