@@ -1,33 +1,505 @@
-<section class="page-header">
-  <div><span class="eyebrow">RESUMEN OPERATIVO</span><h1>Panel general</h1>
-    <p class="muted">Actividad disponible según tus permisos. Indicadores calculados sobre los últimos 100 registros consultados.</p>
+<section class="page dashboard-page">
+  <section class="dashboard-hero">
+    <div class="hero-copy">
+      <div class="hero-topline">
+        <span
+          class="status-pill"
+          [class.live]="esTurnoActual"
+        >
+          <span class="status-dot"></span>
+          {{ estadoPeriodo }}
+        </span>
+
+        <span class="window-label">
+          {{ ventanaDescripcion }}
+        </span>
+        <span class="plaza-scope">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 20V7l8-4 8 4v13M4 10h16M9 20v-6h6v6"/>
+          </svg>
+          {{ plazaActualLabel }}
+        </span>
+      </div>
+
+      <h1>Dashboard AVIX</h1>
+      <p>
+        Seguimiento de fugas, derivados y liberados por plaza, fecha y turno.
+        Consulta una jornada o un mes completo con indicadores actualizados.
+      </p>
+    </div>
+
+    <div class="hero-filters">
+      <div class="field plaza-field">
+        <label for="filtro-plaza">Plaza</label>
+        <select
+          id="filtro-plaza"
+          name="filtroPlaza"
+          [ngModel]="plazaSeleccionada"
+          (ngModelChange)="seleccionarPlaza($event)"
+          [disabled]="loading || !puedeFiltrarPlazas"
+          [attr.aria-label]="puedeFiltrarPlazas ? 'Filtrar por plaza' : 'Plaza asignada al usuario'"
+        >
+          @if (puedeFiltrarPlazas) {
+            <option [ngValue]="null">Todas las plazas</option>
+          } @else if (plazaSeleccionada === null) {
+            <option [ngValue]="null">Sin plaza asignada</option>
+          }
+          @for (plaza of plazasDisponibles; track plaza.id) {
+            <option [ngValue]="plaza.id">{{ plaza.codigo }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="period-control">
+        <span>Período</span>
+        <div class="period-buttons" role="group" aria-label="Tipo de período">
+          <button type="button" [class.active]="periodo === 'DIA'"
+            [attr.aria-pressed]="periodo === 'DIA'"
+            (click)="seleccionarPeriodo('DIA')">Día</button>
+          <button type="button" [class.active]="periodo === 'MES'"
+            [attr.aria-pressed]="periodo === 'MES'"
+            (click)="seleccionarPeriodo('MES')">Mes completo</button>
+        </div>
+      </div>
+
+      <div class="field date-field">
+        @if (esMes) {
+          <label for="dashboard-mes">Mes operativo</label>
+          <input id="dashboard-mes" name="dashboardMes" type="month"
+            [(ngModel)]="mes" (change)="cargar()">
+        } @else {
+          <label for="dashboard-fecha">Fecha operativa</label>
+          <input id="dashboard-fecha" name="dashboardFecha" type="date"
+            [(ngModel)]="fecha" (change)="cargar()">
+        }
+      </div>
+
+      <div class="shift-control">
+        <span>Turno</span>
+
+        <div class="shift-buttons">
+          @for (item of turnos; track item.value) {
+            <button
+              type="button"
+              [class.active]="turno === item.value"
+              (click)="seleccionarTurno(item.value)"
+            >
+              <b>{{ item.value === 'TODOS' ? 'Todos' : item.value }}</b>
+              <small>{{ item.horario }}</small>
+            </button>
+          }
+        </div>
+      </div>
+
+      <button
+        class="refresh-button"
+        type="button"
+        [disabled]="loading"
+        (click)="cargar()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.76-4.24L13 11h8V3l-3.3 3.3Z"/>
+        </svg>
+        <span>{{ loading ? 'Actualizando...' : 'Actualizar' }}</span>
+      </button>
+    </div>
+  </section>
+
+  <div class="dashboard-scope-bar" aria-live="polite">
+    <div>
+      <span class="scope-indicator"></span>
+      <strong>{{ plazaActualLabel }}</strong>
+      <span class="scope-divider">·</span>
+      <span>{{ ventanaDescripcion }}</span>
+    </div>
+    <span class="scope-count">
+      {{ loading ? 'Actualizando indicadores…' : total + ' evento(s) en la selección' }}
+    </span>
   </div>
-  <button class="btn btn-secondary" (click)="cargar()" [disabled]="cargando">↻ Actualizar</button>
-</section>
-<div class="alert alert-error" *ngIf="error">{{error}}</div>
-<section class="stats-grid" aria-label="Resumen de registros">
-  <div class="stat-card"><span>Registros consultados</span><strong>{{total}}</strong><small>Últimos 100 disponibles</small></div>
-  <div class="stat-card"><span>Fugas</span><strong>{{fugas}}</strong><small>Acción FUGA</small></div>
-  <div class="stat-card"><span>Derivados</span><strong>{{derivados}}</strong><small>Acción DERIVADO</small></div>
-  <div class="stat-card"><span>Liberados</span><strong>{{liberados}}</strong><small>Acción LIBERADO</small></div>
-</section>
-<section class="content-card">
-  <div class="card-header"><div><h2>Actividad reciente</h2><p class="muted">Los últimos registros disponibles</p></div>
-    <a class="btn btn-secondary" routerLink="/historial">Ver historial →</a>
-  </div>
-  <div class="table-scroll">
-    <table class="data-table">
-      <thead><tr><th>Plaza</th><th>Vía</th><th>Fecha y hora</th><th>Placa</th><th>Acción</th><th>Código</th></tr></thead>
-      <tbody>
-      <tr *ngFor="let r of recientes">
-        <td>{{r.plazas?.codigo || '—'}}</td><td>{{r.vias?.numero ?? '—'}}</td>
-        <td>{{r.ocurrido_en | date:'dd/MM/yyyy HH:mm':'-0500'}}</td>
-        <td><strong>{{r.placa}}</strong></td>
-        <td><span class="pill" [ngClass]="r.acciones?.codigo?.toLowerCase()">{{r.acciones?.codigo || '—'}}</span></td>
-        <td>{{r.usuarios?.codigo || '—'}}</td>
-      </tr>
-      <tr *ngIf="!cargando && recientes.length===0"><td colspan="6" class="empty-cell">Aún no hay registros para mostrar.</td></tr>
-      </tbody>
-    </table>
-  </div>
+
+  @if (errorPlazas) {
+    <div class="catalog-warning">{{ errorPlazas }}</div>
+  }
+  @if (error) {
+    <div class="error-box dashboard-error" role="alert">{{ error }}</div>
+  }
+
+  @if (turno === 'TODOS') {
+    <section class="turn-summary" aria-label="Resumen de todos los turnos">
+      @for (t of turnosOperativos; track t) {
+        <article class="turn-summary-card">
+          <span>Turno {{ t }}</span>
+          <strong>{{ resumenTurnos[t] }}</strong>
+          <small>eventos</small>
+        </article>
+      }
+    </section>
+  }
+
+  <section class="kpi-grid">
+    <article class="kpi-card total card">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 3h16v18H4V3Zm3 4v2h10V7H7Zm0 4v2h10v-2H7Zm0 4v2h7v-2H7Z"/>
+        </svg>
+      </div>
+      <div class="kpi-copy">
+        <span>Total de eventos</span>
+        <strong>{{ total }}</strong>
+        <small>
+          {{ promedioPorHora | number:'1.0-1' }} por hora ·
+          {{ operadoresActivos }} operador(es)
+        </small>
+      </div>
+    </article>
+
+    <article class="kpi-card fuga card">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2 3 21h18L12 2Zm-1 7h2v6h-2V9Zm0 8h2v2h-2v-2Z"/>
+        </svg>
+      </div>
+      <div class="kpi-copy">
+        <span>Fugas</span>
+        <strong>{{ fugas }}</strong>
+        <small>{{ porcentajeFugas }}% del turno</small>
+      </div>
+    </article>
+
+    <article class="kpi-card derivado card">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M5 4h8v2H7v5h6v2H7v5h6v2H5V4Zm10 5 4 3-4 3V9Z"/>
+        </svg>
+      </div>
+      <div class="kpi-copy">
+        <span>Derivados</span>
+        <strong>{{ derivados }}</strong>
+        <small>{{ porcentajeDerivados }}% del turno</small>
+      </div>
+    </article>
+
+    <article class="kpi-card liberado card">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1 5h2v6h-2V7Zm-3 6 3 3 5-5 1.4 1.4-6.4 6.4-4.4-4.4L8 13Z"/>
+        </svg>
+      </div>
+      <div class="kpi-copy">
+        <span>Liberados</span>
+        <strong>{{ liberados }}</strong>
+        <small>{{ porcentajeLiberados }}% del turno</small>
+      </div>
+    </article>
+
+    <article class="kpi-card card">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M5 5h14v14H5V5Zm2 3v8h10V8H7Zm1 1h3v2H8V9Zm5 0h3v2h-3V9Zm-5 4h8v2H8v-2Z"/>
+        </svg>
+      </div>
+      <div class="kpi-copy">
+        <span>Placas únicas</span>
+        <strong>{{ placasUnicas }}</strong>
+        <small>Vehículos identificados</small>
+      </div>
+    </article>
+
+    <article class="kpi-card card">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 18h16v2H4v-2Zm1-3 4-4 3 3 6-7 1.5 1.3-7.4 8.7-3.1-3.1L6.4 16.4 5 15Z"/>
+        </svg>
+      </div>
+      <div class="kpi-copy">
+        <span>Vía más activa</span>
+        <strong class="compact">{{ viaLider }}</strong>
+        <small>{{ viaLiderTotal }} evento(s)</small>
+      </div>
+    </article>
+
+    <article class="kpi-card card">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v5.6l3.4 2-1 1.7L11 13.7V7h2Z"/>
+        </svg>
+      </div>
+      <div class="kpi-copy">
+        <span>Hora pico</span>
+        <strong class="compact">{{ horaPico }}</strong>
+        <small>{{ horaPicoTotal }} evento(s)</small>
+      </div>
+    </article>
+  </section>
+
+  <section class="insights-grid">
+    <article class="action-card card">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Composición</span>
+          <h2>Distribución por acción</h2>
+          <p>Proporción de fugas, derivados y liberados para el período.</p>
+        </div>
+      </div>
+
+      <div class="action-content">
+        <div
+          class="donut"
+          [style.background]="donutBackground"
+        >
+          <div class="donut-center">
+            <strong>{{ total }}</strong>
+            <span>eventos</span>
+          </div>
+        </div>
+
+        <div class="action-legend">
+          <div class="legend-row">
+            <span class="legend-dot fuga"></span>
+            <div>
+              <b>FUGA</b>
+              <small>{{ fugas }} registros</small>
+            </div>
+            <strong>{{ porcentajeFugas }}%</strong>
+          </div>
+
+          <div class="legend-row">
+            <span class="legend-dot derivado"></span>
+            <div>
+              <b>DERIVADO</b>
+              <small>{{ derivados }} registros</small>
+            </div>
+            <strong>{{ porcentajeDerivados }}%</strong>
+          </div>
+
+          <div class="legend-row">
+            <span class="legend-dot liberado"></span>
+            <div>
+              <b>LIBERADO</b>
+              <small>{{ liberados }} registros</small>
+            </div>
+            <strong>{{ porcentajeLiberados }}%</strong>
+          </div>
+
+          <div class="action-divider"></div>
+
+          <div class="mini-summary">
+            <span>Promedio por hora</span>
+            <b>{{ promedioPorHora | number:'1.0-1' }}</b>
+          </div>
+
+          <div class="mini-summary">
+            <span>Operadores con actividad</span>
+            <b>{{ operadoresActivos }}</b>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="via-card card">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Concentración</span>
+          <h2>Vías con más eventos</h2>
+          <p>Ranking de registros de la plaza y período seleccionados.</p>
+        </div>
+
+        <span class="top-label">
+          {{ viaLiderTotal ? viaLider : 'Sin datos' }}
+        </span>
+      </div>
+
+      @if (porVia.length) {
+        <div class="via-ranking">
+          @for (item of porVia.slice(0, 6); track item.via; let index = $index) {
+            <div class="via-row">
+              <span class="rank">{{ index + 1 }}</span>
+
+              <div class="via-data">
+                <div class="via-line">
+                  <b>Vía {{ item.via }}</b>
+                  <span>{{ item.total }} evento(s)</span>
+                </div>
+
+                <div class="via-track">
+                  <div
+                    class="via-fill"
+                    [style.width.%]="item.width"
+                  ></div>
+                </div>
+
+                <div class="via-breakdown">
+                  <span>{{ item.fugas }} fuga(s)</span>
+                  <span>{{ item.derivados }} derivado(s)</span>
+                  <span>{{ item.liberados }} liberado(s)</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (!loading) {
+        <div class="empty-state">
+          No hay eventos para generar el ranking.
+        </div>
+      }
+    </article>
+  </section>
+
+  <article class="hour-card card">
+    <div class="section-heading hour-heading">
+      <div>
+        <span class="section-kicker">Ritmo operativo</span>
+        <h2>Actividad por hora</h2>
+        <p>
+          {{ esMes ? 'Suma por hora de todas las jornadas del mes.' : 'Franjas de la jornada o turno seleccionado.' }}
+          También se muestran las horas sin eventos.
+        </p>
+      </div>
+
+      @if (horaPicoTotal) {
+        <div class="peak-chip">
+          <span>Mayor actividad</span>
+          <b>{{ horaPico }}</b>
+        </div>
+      }
+    </div>
+
+    <div class="hour-chart-meta">
+      <span class="hour-legend">
+        <span class="fuga">F = fugas</span>
+        <span class="derivado">D = derivados</span>
+        <span class="liberado">L = liberados</span>
+      </span>
+      <span class="hour-scroll-hint">
+        Desliza horizontalmente para ver todas las horas
+        <span aria-hidden="true">→</span>
+      </span>
+    </div>
+
+    <div
+      class="hour-chart-scroll"
+      role="region"
+      aria-label="Actividad por hora. Desplázate horizontalmente para consultar todas las franjas."
+      tabindex="0"
+    >
+      <div class="hour-grid" [class.all-turns]="turno === 'TODOS'" role="list">
+        @for (item of porHora; track item.label; let index = $index) {
+          <div
+            class="hour-column"
+            role="listitem"
+            [class.empty-hour]="item.total === 0"
+            [class.shift-divider]="turno === 'TODOS' && (index === 8 || index === 16)"
+            [attr.title]="item.label + ': ' + item.total + ' eventos, ' + item.fugas + ' fugas, ' + item.derivados + ' derivados y ' + item.liberados + ' liberados'"
+          >
+            <div class="hour-value">
+              <strong>{{ item.total }}</strong>
+              <span>evento(s)</span>
+            </div>
+
+            <div class="hour-track">
+              <div
+                class="hour-fill"
+                [style.height.%]="item.width"
+              ></div>
+            </div>
+
+            <div class="hour-label">
+              <b>{{ item.label.split(' – ')[0] }}</b>
+              <small>{{ item.label.split(' – ')[1] }}</small>
+            </div>
+
+            <div class="hour-breakdown">
+              <span class="fuga">{{ item.fugas }}F</span>
+              <span class="derivado">{{ item.derivados }}D</span>
+              <span class="liberado">{{ item.liberados }}L</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </article>
+
+  <article class="recent-card card">
+    <div class="section-heading recent-heading">
+      <div>
+        <span class="section-kicker">Actividad reciente</span>
+        <h2>Últimos registros</h2>
+        <p>Eventos más recientes del período y plaza seleccionados.</p>
+      </div>
+
+      <div class="recent-actions">
+        @if (ultimaActualizacion) {
+          <span>
+            Actualizado {{ ultimaActualizacion }}
+          </span>
+        }
+
+        <a routerLink="/historial">
+          Ver historial
+          <svg viewBox="0 0 24 24">
+            <path d="m9 6 6 6-6 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha / hora</th>
+            <th>Placa</th>
+            <th>Vía</th>
+            <th>Acción</th>
+            <th>Plaza</th>
+            <th>Trabajador</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of registros.slice(0, 8); track item.id) {
+            <tr>
+              <td class="date-cell">
+                {{ fechaEvento(item.fechaHoraEvento) }}
+              </td>
+              <td>
+                <span class="plate-badge">
+                  {{ item.placa }}
+                </span>
+              </td>
+              <td>
+                <span class="via-badge">
+                  Vía {{ item.via }}
+                </span>
+              </td>
+              <td>
+                <span
+                  class="action-badge"
+                  [class.fuga]="item.accion === 'FUGA'"
+                  [class.liberado]="item.accion === 'LIBERADO'"
+                >
+                  {{ item.accion }}
+                </span>
+              </td>
+              <td>{{ item.plazaCodigo }}</td>
+              <td>
+                <div class="worker-cell">
+                  <b>{{ item.usuarioNombre }}</b>
+                  <small>#{{ item.usuarioCodigo }}</small>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            @if (!loading) {
+              <tr>
+                <td colspan="6" class="empty-table">
+                  No hay registros para la plaza, fecha y turno seleccionados.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
 </section>

@@ -1,87 +1,361 @@
-<section class="page-header">
-  <div><span class="eyebrow">OPERACIONES</span><h1>Historial de registros</h1>
-    <p class="muted">Consulta de fugas, derivados y liberados. Actualización automática cada 10 segundos.</p></div>
-  <button class="btn btn-secondary" (click)="cargar()" [disabled]="cargando">↻ Actualizar</button>
-</section>
-<div class="alert alert-error" *ngIf="error">{{error}} <button class="close-alert" (click)="error=''">×</button></div>
-<div class="alert alert-success" *ngIf="exito">{{exito}}</div>
-<section class="content-card filters-card">
-  <form class="filter-grid" (ngSubmit)="buscar()">
-    <div><label>Plaza</label>
-      <select name="plaza" [(ngModel)]="filtros.plaza"><option value="">Todas las plazas</option>
-        <option *ngFor="let p of plazas" [value]="p.codigo">{{p.codigo}}</option>
-      </select>
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Historial AVIX</h1>
+      <p>
+        Consulta los eventos por fecha operativa, turno y periodos de una hora.
+      </p>
     </div>
-    <div><label>Acción</label>
-      <select name="accion" [(ngModel)]="filtros.accion">
-        <option value="">Todas</option><option value="FUGA">Fuga</option>
-        <option value="DERIVADO">Derivado</option><option value="LIBERADO">Liberado</option>
-      </select></div>
-    <div><label>Fecha operativa</label><input type="date" name="fecha" [(ngModel)]="filtros.fecha"></div>
-    <div class="filter-actions"><button class="btn btn-primary" type="submit">Buscar registros</button></div>
-  </form>
-</section>
-<section class="content-card">
-  <div class="card-header"><div><h2>Registros</h2><p class="muted">20 por página · página {{page+1}}</p></div></div>
-  <div class="table-scroll">
-    <table class="data-table">
-      <thead><tr><th>Plaza</th><th>Vía</th><th>Fecha</th><th>Hora</th><th>Placa</th><th>Acción</th><th>Agente</th><th>Estado</th><th></th></tr></thead>
-      <tbody>
-        <tr *ngFor="let r of rows">
-          <td>{{r.plazas?.codigo || '—'}}</td><td>{{r.vias?.numero ?? '—'}}</td>
-          <td>{{r.ocurrido_en | date:'dd/MM/yyyy':'-0500'}}</td>
-          <td>{{r.ocurrido_en | date:'HH:mm':'-0500'}}</td>
-          <td><strong>{{r.placa}}</strong></td>
-          <td><span class="pill" [ngClass]="r.acciones?.codigo?.toLowerCase()">{{r.acciones?.codigo || '—'}}</span></td>
-          <td>{{r.usuarios?.codigo || '—'}}</td>
-          <td><span [class.text-red]="r.anulado">{{r.anulado ? 'Anulado' : 'Activo'}}</span></td>
-          <td><button class="btn btn-small btn-secondary" (click)="abrir(r)">Ver detalle</button></td>
-        </tr>
-        <tr *ngIf="!cargando && rows.length===0"><td colspan="9" class="empty-cell">No se encontraron registros.</td></tr>
-      </tbody>
-    </table>
   </div>
-  <div class="pagination">
-    <button class="btn btn-secondary" (click)="anterior()" [disabled]="page===0 || cargando">← Anterior</button>
-    <span>Página {{page+1}}</span>
-    <button class="btn btn-secondary" (click)="siguiente()" [disabled]="rows.length<size || cargando">Siguiente →</button>
-  </div>
-</section>
 
-<div class="modal-mask" *ngIf="detalle as r" (click)="cerrar()">
-  <section class="modal-card modal-wide" role="dialog" aria-modal="true" aria-label="Detalle de registro" (click)="$event.stopPropagation()">
-    <div class="modal-header"><div><span class="eyebrow">REGISTRO OPERATIVO</span><h2>Detalle y auditoría</h2></div>
-      <button class="icon-button" (click)="cerrar()" aria-label="Cerrar">×</button></div>
-    <p class="muted">ID: {{r.id}}</p>
-    <div class="record-summary">
-      <div><small>Plaza</small><strong>{{r.plazas?.codigo || '—'}}</strong></div>
-      <div><small>Agente</small><strong>{{r.usuarios?.codigo || '—'}}</strong></div>
-      <div><small>Turno</small><strong>{{r.turnos?.codigo || '—'}}</strong></div>
-      <div><small>Estado</small><strong>{{r.anulado ? 'Anulado' : 'Activo'}}</strong></div>
+  <section class="filters card">
+    <div class="top-filters">
+      <div class="field">
+        <label>Fecha operativa</label>
+        <input type="date" [(ngModel)]="fecha">
+      </div>
+
+      <div class="field action-field">
+        <label>Acción</label>
+        <select [(ngModel)]="accion">
+          <option value="">Todas</option>
+          <option value="FUGA">FUGA</option>
+          <option value="DERIVADO">DERIVADO</option>
+          <option value="LIBERADO">LIBERADO</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Vía</label>
+        <input
+          [(ngModel)]="via"
+          inputmode="numeric"
+          placeholder="Todas"
+        >
+      </div>
+
+      <div class="field plate-search">
+        <label>Buscar placa</label>
+        <input
+          [ngModel]="buscarPlaca"
+          (ngModelChange)="cambiarBusquedaPlaca($event)"
+          placeholder="Ej. I1L110"
+        >
+      </div>
     </div>
-    <div *ngIf="!r.anulado">
-      <h3>Editar registro</h3>
-      <div class="form-grid">
-        <div><label>Placa</label><input [(ngModel)]="editor.placa" maxlength="12" [disabled]="guardando"></div>
-        <div><label>Vía</label><input type="number" [(ngModel)]="editor.via" [disabled]="guardando"></div>
-        <div><label>Acción</label><select [(ngModel)]="editor.accion" [disabled]="guardando">
-          <option value="FUGA">Fuga</option><option value="DERIVADO">Derivado</option><option value="LIBERADO">Liberado</option>
-        </select></div>
-        <div><label>Observaciones</label><input [(ngModel)]="editor.observaciones" maxlength="1000" [disabled]="guardando"></div>
+
+    <div class="shift-section">
+      <div class="filter-label">
+        <b>Turno</b>
+        <span>
+          A 06–14 · B 14–22 · C 22–06
+        </span>
       </div>
-      <label>Motivo obligatorio</label><textarea [(ngModel)]="motivo" rows="2" maxlength="1000" placeholder="Explica la corrección o anulación"></textarea>
-      <div class="button-row">
-        <button class="btn btn-primary" (click)="guardar()" [disabled]="guardando || cargandoDetalle">Guardar cambios</button>
-        <button class="btn btn-danger" (click)="anular()" [disabled]="guardando || cargandoDetalle">Anular registro</button>
+
+      <div class="shift-buttons">
+        @for (item of turnos; track item.value) {
+          <button
+            type="button"
+            [class.active]="turno === item.value"
+            (click)="turno = item.value; cambiarTurno()"
+          >
+            <strong>{{ item.label }}</strong>
+            <small>{{ item.horario }}</small>
+          </button>
+        }
       </div>
     </div>
-    <h3>Auditoría</h3>
-    <div class="audit-list">
-      <div class="audit-event" *ngFor="let a of auditoria">
-        <strong>{{a.operacion}}</strong><span>{{a.creado_en | date:'dd/MM/yyyy HH:mm':'-0500'}}</span>
-        <small>{{a.usuarios?.codigo || 'Sistema'}} · {{a.motivo}}</small>
+
+    <div class="hour-section">
+      <div class="field">
+        <label>Periodo por hora</label>
+        <select
+          [(ngModel)]="franja"
+          [disabled]="turno === 'TODOS'"
+        >
+          <option [ngValue]="null">Todo el turno</option>
+          @for (item of franjas; track item.value) {
+            <option [ngValue]="item.value">
+              {{ item.label }}
+            </option>
+          }
+        </select>
       </div>
-      <p class="muted" *ngIf="auditoria.length===0">No se encontraron movimientos de auditoría.</p>
+
+      <div class="window-summary">
+        <span>Ventana consultada</span>
+        <b>{{ ventanaDescripcion || 'Selecciona y aplica los filtros' }}</b>
+      </div>
+
+      <div class="filter-actions">
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="limpiar()"
+        >
+          Limpiar
+        </button>
+        <button
+          type="button"
+          class="primary-button"
+          (click)="cargar()"
+        >
+          Aplicar filtros
+        </button>
+      </div>
     </div>
   </section>
-</div>
+
+  @if (error) {
+    <div class="error-box history-error">{{ error }}</div>
+  }
+
+  <section class="result-card card">
+    <div class="results-header">
+      <div>
+        <h2>Registros</h2>
+        <p>
+          {{ registrosFiltrados.length }} resultado(s)
+          @if (buscarPlaca) {
+            · búsqueda local por placa
+          }
+        </p>
+      </div>
+
+      <div class="history-refresh">
+        <div class="history-refresh-info" aria-live="polite">
+          <span
+            class="history-refresh-indicator"
+            [class.paused]="!autoActualizar || editing != null"
+          ></span>
+          <span>
+            @if (editing) {
+              Actualización pausada durante la edición
+            } @else if (autoActualizar) {
+              Actualización automática cada {{ intervaloActualizacionSegundos }} s
+            } @else {
+              Actualización automática pausada
+            }
+          </span>
+          @if (ultimaActualizacion) {
+            <small>Última actualización: {{ ultimaActualizacion }} (Lima)</small>
+          }
+          @if (loading || actualizandoEnSegundoPlano) {
+            <small>Consultando AVIX...</small>
+          }
+        </div>
+        <button
+          type="button"
+          class="refresh-toggle"
+          (click)="alternarActualizacionAutomatica()"
+        >
+          {{ autoActualizar ? 'Pausar' : 'Reanudar' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Plaza</th>
+            <th>Vía</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Placa</th>
+            <th>Acción</th>
+            <th>Código de agente</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of registrosPaginados; track item.id) {
+            <tr>
+              <td>{{ item.plazaCodigo }}</td>
+              <td>Vía {{ item.via }}</td>
+              <td>{{ item.fechaHoraEvento | date:'dd/MM/yyyy':'-0500' }}</td>
+              <td>{{ item.fechaHoraEvento | date:'HH:mm:ss':'-0500' }}</td>
+              <td class="plate">{{ item.placa }} @if (item.anulado) { <small class="avix-void-badge">ANULADO</small> }</td>
+              <td>
+                <span
+                  class="action-badge"
+                  [class.fuga]="item.accion === 'FUGA'"
+                  [class.liberado]="item.accion === 'LIBERADO'"
+                >
+                  {{ item.accion }}
+                </span>
+              </td>
+              <td>{{ item.usuarioCodigo }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="edit-button"
+                  (click)="abrirEdicion(item)"
+                >
+                  Editar
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            @if (!loading) {
+              <tr>
+                <td colspan="8" class="empty-row">
+                  No existen registros para los filtros seleccionados.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="history-pagination" aria-label="Paginación de registros">
+      <span class="pagination-summary">
+        Mostrando {{ primerRegistroPagina }}–{{ ultimoRegistroPagina }}
+        de {{ registrosFiltrados.length }} registros
+      </span>
+
+      @if (registrosFiltrados.length > 0) {
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="pagination-button"
+            [disabled]="paginaActual === 1"
+            (click)="irAPagina(paginaActual - 1)"
+            aria-label="Ir a la página anterior"
+          >
+            Anterior
+          </button>
+
+          <span class="pagination-position" aria-live="polite">
+            Página {{ paginaActual }} de {{ totalPaginas }}
+          </span>
+
+          <button
+            type="button"
+            class="pagination-button"
+            [disabled]="paginaActual >= totalPaginas"
+            (click)="irAPagina(paginaActual + 1)"
+            aria-label="Ir a la página siguiente"
+          >
+            Siguiente
+          </button>
+        </div>
+      }
+    </nav>
+  </section>
+</section>
+
+@if (editing) {
+  <div class="modal-backdrop" (click)="cerrarEdicion()">
+    <section class="edit-modal card" (click)="$event.stopPropagation()">
+      <div class="modal-heading">
+        <div>
+          <span>Corrección de historial</span>
+          <h2>{{ editing.anulado ? 'Auditoría de' : 'Editar' }} {{ editing.placa }}</h2>
+        </div>
+        <button type="button" (click)="cerrarEdicion()">×</button>
+      </div>
+
+      <div class="edit-grid">
+        <div class="field">
+          <label>Placa</label>
+          <input
+            [(ngModel)]="editPlaca"
+            maxlength="6"
+          >
+        </div>
+
+        <div class="field">
+          <label>Vía</label>
+          <input
+            [(ngModel)]="editVia"
+            inputmode="numeric"
+          >
+        </div>
+
+        <div class="field full">
+          <label>Acción</label>
+          <div class="edit-actions">
+            <button
+              type="button"
+              [class.active]="editAccion === 'FUGA'"
+              (click)="editAccion = 'FUGA'"
+            >
+              FUGA
+            </button>
+            <button
+              type="button"
+              [class.active]="editAccion === 'DERIVADO'"
+              (click)="editAccion = 'DERIVADO'"
+            >
+              DERIVADO
+            </button>
+            <button
+              type="button"
+              [class.active]="editAccion === 'LIBERADO'"
+              [class.liberado-active]="editAccion === 'LIBERADO'"
+              (click)="editAccion = 'LIBERADO'"
+            >
+              LIBERADO
+            </button>
+          </div>
+        </div>
+      </div>
+
+      @if (!editing.anulado) {
+        <div class="field avix-reason">
+          <label for="avix-edit-motivo">Motivo del cambio o anulación (obligatorio)</label>
+          <textarea id="avix-edit-motivo" [(ngModel)]="editMotivo" rows="2" maxlength="1000"
+            placeholder="Explica por qué se corrige o anula este registro"></textarea>
+        </div>
+      }
+
+      @if (editError) {
+        <div class="error-box">{{ editError }}</div>
+      }
+
+      <section class="avix-audit-log">
+        <h3>Historial de auditoría</h3>
+        @if (auditLoading) {
+          <p>Consultando cambios...</p>
+        } @else if (auditoria.length) {
+          @for (cambio of auditoria; track cambio.id) {
+            <div class="avix-audit-item">
+              <strong>{{ cambio.operacion }}</strong>
+              <time>{{ cambio.creado_en | date:'dd/MM/yyyy HH:mm':'-0500' }}</time>
+              <small>{{ cambio.usuarios?.codigo || 'Sistema' }} · {{ cambio.motivo }}</small>
+            </div>
+          }
+        } @else {
+          <p>No se encontraron movimientos para este registro.</p>
+        }
+      </section>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="secondary-button"
+          [disabled]="saving"
+          (click)="cerrarEdicion()"
+        >
+          Cancelar
+        </button>
+        @if (!editing.anulado) {
+          <button type="button" class="avix-danger-button" [disabled]="saving" (click)="anularEdicion()">
+            Anular registro
+          </button>
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="saving"
+            (click)="guardarEdicion()"
+          >
+            {{ saving ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        }
+      </div>
+    </section>
+  </div>
+}
