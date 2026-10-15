@@ -1,0 +1,30 @@
+<main class="login-screen">
+  <div class="login-intro">
+    <div class="brand brand-lg"><span class="brand-symbol">△</span> AVIX</div>
+    <div class="login-hero">
+      <span class="eyebrow light">PLATAFORMA DE MONITOREO</span>
+      <h1>Control operativo.<br><span>Información al instante.</span></h1>
+      <p>Consulta los registros de vías, supervisa las operaciones y administra el equipo desde una sola plataforma.</p>
+    </div>
+    <div class="login-legal">AVIX · Sistema independiente de SIGO</div>
+  </div>
+  <div class="login-form-side">
+    <div class="login-card">
+      <div class="top-accent"></div>
+      <span class="eyebrow">ACCESO A AVIX WEB</span>
+      <h2>Bienvenido</h2>
+      <p class="muted">Ingresa con tu código y contraseña.</p>
+      <form (ngSubmit)="ingresar()" #form="ngForm">
+        <label for="codigo">Código de usuario</label>
+        <input id="codigo" name="codigo" [(ngModel)]="codigo" required placeholder="Ej. CTRL001" autocomplete="username" [disabled]="cargando" maxlength="30" />
+        <label for="pass">Contraseña</label>
+        <input id="pass" name="pass" [(ngModel)]="contrasena" required type="password" placeholder="Tu contraseña" autocomplete="current-password" [disabled]="cargando"/>
+        <div class="alert alert-error" *ngIf="error">{{error}}</div>
+        <button class="btn btn-primary full-width" type="submit" [disabled]="form.invalid || cargando">
+          {{cargando ? 'Validando acceso…' : 'Ingresar al sistema'}}
+        </button>
+      </form>
+      <p class="muted footnote">Acceso web exclusivo para controladores y supervisores.</p>
+    </div>
+  </div>
+</main>

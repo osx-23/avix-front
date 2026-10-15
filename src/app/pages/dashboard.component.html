@@ -1,0 +1,33 @@
+<section class="page-header">
+  <div><span class="eyebrow">RESUMEN OPERATIVO</span><h1>Panel general</h1>
+    <p class="muted">Actividad disponible según tus permisos. Indicadores calculados sobre los últimos 100 registros consultados.</p>
+  </div>
+  <button class="btn btn-secondary" (click)="cargar()" [disabled]="cargando">↻ Actualizar</button>
+</section>
+<div class="alert alert-error" *ngIf="error">{{error}}</div>
+<section class="stats-grid" aria-label="Resumen de registros">
+  <div class="stat-card"><span>Registros consultados</span><strong>{{total}}</strong><small>Últimos 100 disponibles</small></div>
+  <div class="stat-card"><span>Fugas</span><strong>{{fugas}}</strong><small>Acción FUGA</small></div>
+  <div class="stat-card"><span>Derivados</span><strong>{{derivados}}</strong><small>Acción DERIVADO</small></div>
+  <div class="stat-card"><span>Liberados</span><strong>{{liberados}}</strong><small>Acción LIBERADO</small></div>
+</section>
+<section class="content-card">
+  <div class="card-header"><div><h2>Actividad reciente</h2><p class="muted">Los últimos registros disponibles</p></div>
+    <a class="btn btn-secondary" routerLink="/historial">Ver historial →</a>
+  </div>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>Plaza</th><th>Vía</th><th>Fecha y hora</th><th>Placa</th><th>Acción</th><th>Código</th></tr></thead>
+      <tbody>
+      <tr *ngFor="let r of recientes">
+        <td>{{r.plazas?.codigo || '—'}}</td><td>{{r.vias?.numero ?? '—'}}</td>
+        <td>{{r.ocurrido_en | date:'dd/MM/yyyy HH:mm':'-0500'}}</td>
+        <td><strong>{{r.placa}}</strong></td>
+        <td><span class="pill" [ngClass]="r.acciones?.codigo?.toLowerCase()">{{r.acciones?.codigo || '—'}}</span></td>
+        <td>{{r.usuarios?.codigo || '—'}}</td>
+      </tr>
+      <tr *ngIf="!cargando && recientes.length===0"><td colspan="6" class="empty-cell">Aún no hay registros para mostrar.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

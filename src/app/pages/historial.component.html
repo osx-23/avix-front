@@ -1,0 +1,87 @@
+<section class="page-header">
+  <div><span class="eyebrow">OPERACIONES</span><h1>Historial de registros</h1>
+    <p class="muted">Consulta de fugas, derivados y liberados. Actualización automática cada 10 segundos.</p></div>
+  <button class="btn btn-secondary" (click)="cargar()" [disabled]="cargando">↻ Actualizar</button>
+</section>
+<div class="alert alert-error" *ngIf="error">{{error}} <button class="close-alert" (click)="error=''">×</button></div>
+<div class="alert alert-success" *ngIf="exito">{{exito}}</div>
+<section class="content-card filters-card">
+  <form class="filter-grid" (ngSubmit)="buscar()">
+    <div><label>Plaza</label>
+      <select name="plaza" [(ngModel)]="filtros.plaza"><option value="">Todas las plazas</option>
+        <option *ngFor="let p of plazas" [value]="p.codigo">{{p.codigo}}</option>
+      </select>
+    </div>
+    <div><label>Acción</label>
+      <select name="accion" [(ngModel)]="filtros.accion">
+        <option value="">Todas</option><option value="FUGA">Fuga</option>
+        <option value="DERIVADO">Derivado</option><option value="LIBERADO">Liberado</option>
+      </select></div>
+    <div><label>Fecha operativa</label><input type="date" name="fecha" [(ngModel)]="filtros.fecha"></div>
+    <div class="filter-actions"><button class="btn btn-primary" type="submit">Buscar registros</button></div>
+  </form>
+</section>
+<section class="content-card">
+  <div class="card-header"><div><h2>Registros</h2><p class="muted">20 por página · página {{page+1}}</p></div></div>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>Plaza</th><th>Vía</th><th>Fecha</th><th>Hora</th><th>Placa</th><th>Acción</th><th>Agente</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let r of rows">
+          <td>{{r.plazas?.codigo || '—'}}</td><td>{{r.vias?.numero ?? '—'}}</td>
+          <td>{{r.ocurrido_en | date:'dd/MM/yyyy':'-0500'}}</td>
+          <td>{{r.ocurrido_en | date:'HH:mm':'-0500'}}</td>
+          <td><strong>{{r.placa}}</strong></td>
+          <td><span class="pill" [ngClass]="r.acciones?.codigo?.toLowerCase()">{{r.acciones?.codigo || '—'}}</span></td>
+          <td>{{r.usuarios?.codigo || '—'}}</td>
+          <td><span [class.text-red]="r.anulado">{{r.anulado ? 'Anulado' : 'Activo'}}</span></td>
+          <td><button class="btn btn-small btn-secondary" (click)="abrir(r)">Ver detalle</button></td>
+        </tr>
+        <tr *ngIf="!cargando && rows.length===0"><td colspan="9" class="empty-cell">No se encontraron registros.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination">
+    <button class="btn btn-secondary" (click)="anterior()" [disabled]="page===0 || cargando">← Anterior</button>
+    <span>Página {{page+1}}</span>
+    <button class="btn btn-secondary" (click)="siguiente()" [disabled]="rows.length<size || cargando">Siguiente →</button>
+  </div>
+</section>
+
+<div class="modal-mask" *ngIf="detalle as r" (click)="cerrar()">
+  <section class="modal-card modal-wide" role="dialog" aria-modal="true" aria-label="Detalle de registro" (click)="$event.stopPropagation()">
+    <div class="modal-header"><div><span class="eyebrow">REGISTRO OPERATIVO</span><h2>Detalle y auditoría</h2></div>
+      <button class="icon-button" (click)="cerrar()" aria-label="Cerrar">×</button></div>
+    <p class="muted">ID: {{r.id}}</p>
+    <div class="record-summary">
+      <div><small>Plaza</small><strong>{{r.plazas?.codigo || '—'}}</strong></div>
+      <div><small>Agente</small><strong>{{r.usuarios?.codigo || '—'}}</strong></div>
+      <div><small>Turno</small><strong>{{r.turnos?.codigo || '—'}}</strong></div>
+      <div><small>Estado</small><strong>{{r.anulado ? 'Anulado' : 'Activo'}}</strong></div>
+    </div>
+    <div *ngIf="!r.anulado">
+      <h3>Editar registro</h3>
+      <div class="form-grid">
+        <div><label>Placa</label><input [(ngModel)]="editor.placa" maxlength="12" [disabled]="guardando"></div>
+        <div><label>Vía</label><input type="number" [(ngModel)]="editor.via" [disabled]="guardando"></div>
+        <div><label>Acción</label><select [(ngModel)]="editor.accion" [disabled]="guardando">
+          <option value="FUGA">Fuga</option><option value="DERIVADO">Derivado</option><option value="LIBERADO">Liberado</option>
+        </select></div>
+        <div><label>Observaciones</label><input [(ngModel)]="editor.observaciones" maxlength="1000" [disabled]="guardando"></div>
+      </div>
+      <label>Motivo obligatorio</label><textarea [(ngModel)]="motivo" rows="2" maxlength="1000" placeholder="Explica la corrección o anulación"></textarea>
+      <div class="button-row">
+        <button class="btn btn-primary" (click)="guardar()" [disabled]="guardando || cargandoDetalle">Guardar cambios</button>
+        <button class="btn btn-danger" (click)="anular()" [disabled]="guardando || cargandoDetalle">Anular registro</button>
+      </div>
+    </div>
+    <h3>Auditoría</h3>
+    <div class="audit-list">
+      <div class="audit-event" *ngFor="let a of auditoria">
+        <strong>{{a.operacion}}</strong><span>{{a.creado_en | date:'dd/MM/yyyy HH:mm':'-0500'}}</span>
+        <small>{{a.usuarios?.codigo || 'Sistema'}} · {{a.motivo}}</small>
+      </div>
+      <p class="muted" *ngIf="auditoria.length===0">No se encontraron movimientos de auditoría.</p>
+    </div>
+  </section>
+</div>

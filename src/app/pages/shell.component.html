@@ -1,0 +1,27 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <a routerLink="/dashboard" class="brand"><span class="brand-symbol">△</span> AVIX <span class="brand-dot"></span></a>
+    <p class="menu-label">GESTIÓN OPERATIVA</p>
+    <nav class="main-nav" aria-label="Navegación">
+      <a routerLink="/dashboard" routerLinkActive="active">◫ <span>Panel general</span></a>
+      <a routerLink="/historial" routerLinkActive="active">▤ <span>Historial de registros</span></a>
+      <ng-container *ngIf="auth.isSupervisor">
+        <p class="menu-label with-spacing">ADMINISTRACIÓN</p>
+        <a routerLink="/usuarios" routerLinkActive="active">♙ <span>Usuarios y accesos</span></a>
+        <a routerLink="/vias" routerLinkActive="active">≡ <span>Configuración de vías</span></a>
+      </ng-container>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-avatar">{{(auth.usuario()?.nombres || 'U').slice(0,1).toUpperCase()}}</div>
+      <div class="user-meta"><strong>{{auth.usuario()?.codigo}}</strong><small>{{auth.usuario()?.rol}}</small></div>
+      <button class="icon-button light-button" aria-label="Cerrar sesión" title="Cerrar sesión" (click)="salir()">⎋</button>
+    </div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar">
+      <span class="topbar-title">AVIX <span> / Plataforma de control</span></span>
+      <span class="status-pill"><span class="status-dot"></span> Entorno local</span>
+    </header>
+    <div class="page-container"><router-outlet /></div>
+  </div>
+</div>

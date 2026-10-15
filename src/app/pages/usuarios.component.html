@@ -1,0 +1,85 @@
+<section class="page-header">
+  <div><span class="eyebrow">ADMINISTRACIÓN</span><h1>Usuarios y accesos</h1>
+    <p class="muted">Los agentes acceden solo a Android. Controladores y supervisores pueden ingresar a AVIX Web.</p>
+  </div>
+</section>
+<div class="alert alert-error" *ngIf="error">{{error}} <button class="close-alert" (click)="error=''">×</button></div>
+<div class="alert alert-success" *ngIf="exito">{{exito}}</div>
+<div class="two-column">
+  <section class="content-card">
+    <div class="card-header"><div><h2>Nuevo usuario</h2><p class="muted">Alta en la base de datos AVIX</p></div></div>
+    <form class="stack-form" (ngSubmit)="crear()" #userForm="ngForm">
+      <label>Código de usuario</label><input name="codigo" [(ngModel)]="nuevo.codigo" required minlength="3" maxlength="30" placeholder="Ej. AG001"/>
+      <label>Nombres</label><input name="nombres" [(ngModel)]="nuevo.nombres" required maxlength="120" placeholder="Nombre completo"/>
+      <label>Apellidos</label><input name="apellidos" [(ngModel)]="nuevo.apellidos" maxlength="120"/>
+      <label>Rol</label>
+      <select name="rol" [(ngModel)]="nuevo.rol" required>
+        <option value="AGENTE">Agente</option><option value="CONTROLADOR">Controlador</option><option value="SUPERVISOR">Supervisor</option>
+      </select>
+      <ng-container *ngIf="nuevo.rol!=='AGENTE'">
+        <label>Contraseña web (mínimo 10 caracteres)</label>
+        <input name="contrasena" type="password" [(ngModel)]="nuevo.contrasena"
+               autocomplete="new-password" minlength="10" required />
+      </ng-container>
+      <div class="hint" *ngIf="nuevo.rol==='AGENTE'">El agente ingresará a Android solo con su código.</div>
+      <button class="btn btn-primary" type="submit" [disabled]="guardando || userForm.invalid">Crear usuario</button>
+    </form>
+  </section>
+  <section class="content-card">
+    <div class="card-header"><div><h2>Usuarios existentes</h2><p class="muted">Selecciona uno para configurar permisos.</p></div>
+      <button class="btn btn-secondary" (click)="cargar()" [disabled]="cargando">↻</button>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Código</th><th>Nombres</th><th>Rol</th><th>Estado</th><th></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let u of usuarios">
+            <td><strong>{{u.codigo}}</strong></td><td>{{u.nombres}}</td><td>{{u.rol}}</td>
+            <td><span class="pill" [ngClass]="u.activo?'active-pill':'inactive-pill'">{{u.activo?'Activo':'Inactivo'}}</span></td>
+            <td><button class="btn btn-small btn-secondary" (click)="seleccionar(u)">Gestionar</button></td>
+          </tr>
+          <tr *ngIf="!cargando && usuarios.length===0"><td colspan="5" class="empty-cell">No existen usuarios todavía.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<section class="content-card user-detail" *ngIf="seleccionado as u">
+  <div class="card-header"><div><span class="eyebrow">CONFIGURAR USUARIO</span><h2>{{u.codigo}} · {{u.nombres}}</h2></div>
+    <button class="icon-button" (click)="seleccionado=null" aria-label="Cerrar">×</button></div>
+  <div class="two-column">
+    <div>
+      <h3>Datos y permisos</h3>
+      <div class="stack-form">
+        <label>Nombres</label><input [(ngModel)]="editor.nombres" maxlength="120"/>
+        <label>Apellidos</label><input [(ngModel)]="editor.apellidos" maxlength="120"/>
+        <label>Rol</label><select [(ngModel)]="editor.rol">
+          <option value="AGENTE">Agente</option><option value="CONTROLADOR">Controlador</option><option value="SUPERVISOR">Supervisor</option>
+        </select>
+        <label>Nueva contraseña (dejar vacía para no cambiar)</label>
+        <input type="password" [(ngModel)]="editor.contrasena" autocomplete="new-password" placeholder="Mínimo 10 caracteres"/>
+        <div class="button-row">
+          <button class="btn btn-primary" (click)="guardar()" [disabled]="guardando">Guardar cambios</button>
+          <button class="btn" [ngClass]="u.activo?'btn-danger':'btn-secondary'" (click)="activar(u)" [disabled]="guardando">
+            {{u.activo?'Desactivar usuario':'Activar usuario'}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Plazas asignadas</h3>
+      <div class="filter-inline">
+        <select [(ngModel)]="nuevaPlaza" aria-label="Plaza para asignar">
+          <option *ngFor="let p of plazas" [value]="p.codigo">{{p.codigo}}</option>
+        </select>
+        <button class="btn btn-primary" (click)="asignar()" [disabled]="guardando || !nuevaPlaza">Asignar plaza</button>
+      </div>
+      <div class="assignment" *ngFor="let a of asignaciones">
+        <strong>{{a.plazas?.codigo || a.plaza_id}}</strong>
+        <span class="pill" [ngClass]="a.activa?'active-pill':'inactive-pill'">{{a.activa?'Activa':'Inactiva'}}</span>
+        <button class="btn btn-small btn-secondary" (click)="cambiarAsignacion(a)" [disabled]="guardando">{{a.activa?'Desactivar':'Activar'}}</button>
+      </div>
+      <p class="muted" *ngIf="asignaciones.length===0">Este usuario no tiene plazas asignadas.</p>
+    </div>
+  </div>
+</section>

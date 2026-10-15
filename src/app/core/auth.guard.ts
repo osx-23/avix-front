@@ -1,0 +1,12 @@
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from './auth.service';
+
+export const authGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  return auth.isAuthenticated ? true : inject(Router).parseUrl('/login');
+};
+export const supervisorGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  return auth.isSupervisor ? true : inject(Router).parseUrl('/dashboard');
+};
