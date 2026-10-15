@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { tap } from 'rxjs';
-import { Sesion, Usuario } from './models';
+import { Sesion, Usuario } from '../models/avix.models';
 
 const KEY = 'avix.web.session';
 @Injectable({providedIn:'root'})

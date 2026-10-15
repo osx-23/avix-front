@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { ApiService } from '../../../core/api.service';
+import { ApiService } from '../../../core/api/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class ViasRepository {

@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { ApiService } from '../../../core/api.service';
-import { Plaza, Rol, Usuario } from '../../../core/models';
+import { ApiService } from '../../../core/api/api.service';
+import { Plaza, Rol, Usuario } from '../../../core/models/avix.models';
 
-/** Tipos de entrada del módulo; el API no recibe contraseñas en las respuestas. */
+
 export type EstadoUsuariosFiltro = 'ACTIVOS' | 'INACTIVOS' | 'TODOS';
 export type RolUsuariosFiltro = Rol | '';
 

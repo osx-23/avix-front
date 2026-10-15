@@ -3,9 +3,9 @@ import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Plaza, Via } from '../../core/models';
+import { Plaza, Via } from '../../core/models/avix.models';
 import { ViasRepository } from './data/vias.repository';
-import { mensajeError } from '../../core/http-error';
+import { mensajeError } from '../../core/errors/http-error';
 
 @Component({
   standalone: true,
@@ -17,7 +17,7 @@ export class ViasComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private consulta?: Subscription;
 
-  // Angular zoneless: cada respuesta asíncrona publica un Signal.
+
   readonly plazas = signal<Plaza[]>([]);
   readonly vias = signal<Via[]>([]);
   readonly cargando = signal(false);

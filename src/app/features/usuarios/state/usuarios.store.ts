@@ -1,22 +1,14 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
-import { mensajeError } from '../../../core/http-error';
+import { mensajeError } from '../../../core/errors/http-error';
 import { Observable, Subscription, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Plaza, Usuario } from '../../../core/models';
+import { Plaza, Usuario } from '../../../core/models/avix.models';
 import {
   AltaUsuario, AsignacionUsuario, CambioUsuario, EstadoUsuariosFiltro,
   RolUsuariosFiltro, UsuariosRepository
 } from '../data/usuarios.repository';
 
 
-/**
- * Estado de la pantalla mediante Signals:
- * las respuestas HTTP actualizan inmediatamente la vista, sin esperar un clic
- * sobre inputs/selects (Angular zoneless).
- *
- * El store vive solo durante la ruta Usuarios: no comparte datos sensibles
- * entre sesiones ni guarda un caché persistente de cuentas.
- */
 @Injectable()
 export class UsuariosStore {
   private readonly repository = inject(UsuariosRepository);
@@ -52,7 +44,7 @@ export class UsuariosStore {
     this.cargar();
     this.cargarPlazas();
 
-    // Sincroniza cambios realizados en otras sesiones mientras la vista está abierta.
+
     timer(30_000, 30_000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (typeof document !== 'undefined' && document.hidden) return;
       if (!this.cargando() && !this.guardando()) this.cargar(true);
@@ -60,7 +52,7 @@ export class UsuariosStore {
   }
 
   cargar(silencioso = false): void {
-    this.listadoSub?.unsubscribe(); // filtros rápidos: nunca aplicar respuestas antiguas
+    this.listadoSub?.unsubscribe(); 
     if (!silencioso) this.cargando.set(true);
     if (!silencioso) this.error.set('');
 
@@ -79,7 +71,7 @@ export class UsuariosStore {
       },
       error: error => {
         this.cargando.set(false);
-        // Un refresco automático no debe vaciar resultados válidos previos.
+
         this.error.set(mensajeError(error));
       }
     });
@@ -146,7 +138,7 @@ export class UsuariosStore {
     this.asignacionesSub = this.repository.asignaciones(id)
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: items => {
-          // Evita que una respuesta obsoleta de otro usuario sustituya esta lista.
+
           if (this.seleccionado()?.id === id) this.asignaciones.set(items);
           this.cargandoAsignaciones.set(false);
         },
@@ -163,7 +155,7 @@ export class UsuariosStore {
 
   guardarUsuario(id: string, cambios: CambioUsuario, ok: () => void): void {
     this.ejecutar(this.repository.actualizar(id, cambios), 'Datos del usuario actualizados.', () => {
-      // Actualización inmediata sin depender de la siguiente consulta.
+
       this.seleccionado.update(current => current?.id === id
         ? { ...current, ...this.soloCamposPublicos(cambios) } : current);
       ok();
@@ -177,7 +169,7 @@ export class UsuariosStore {
       activo ? 'Usuario activado correctamente.' : 'Usuario desactivado correctamente.',
       () => {
         if (this.seleccionado()?.id === usuario.id) this.cerrarDetalle();
-        // Si se visualizan solo los activos, recargar elimina al desactivado.
+
       }
     );
   }

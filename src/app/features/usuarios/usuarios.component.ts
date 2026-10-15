@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Rol, Usuario } from '../../core/models';
+import { Rol, Usuario } from '../../core/models/avix.models';
 import { AltaUsuario, AsignacionUsuario, CambioUsuario, RolUsuariosFiltro, EstadoUsuariosFiltro } from './data/usuarios.repository';
 import { UsuariosStore } from './state/usuarios.store';
 

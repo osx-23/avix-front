@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Accion, Catalogo, Cambio, Plaza, Registro, Usuario, Via } from './models';
+import { Accion, Catalogo, Cambio, Plaza, Registro, Usuario, Via } from '../models/avix.models';
 
-// Ruta relativa: en local Angular la envía por el proxy a avix-api:8080.
+
 const API = '/api/v1';
 
 @Injectable({ providedIn: 'root' })

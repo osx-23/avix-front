@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, Observable, throwError } from 'rxjs';
 import { catchError, expand, map, reduce, shareReplay, switchMap } from 'rxjs/operators';
-import { ApiService } from './api.service';
-import { AuthService } from './auth.service';
-import { Accion, Cambio, Plaza, Registro } from './models';
+import { ApiService } from '../../../core/api/api.service';
+import { AuthService } from '../../../core/auth/auth.service';
+import { Accion, Cambio, Plaza, Registro } from '../../../core/models/avix.models';
 
 export type AviAccion = Accion;
 
@@ -35,13 +35,7 @@ export interface AviRegistroUpdate {
   fechaHoraEvento: string; textoReconocido: string; motivo: string;
 }
 
-/**
- * Adaptador AVIX Web independiente de SIGO.
- * Optimización:
- *  - El backend filtra directamente por instante, plaza, vía y acción.
- *  - Una consulta mensual sin datos ocupa una sola página, no ~31 peticiones.
- *  - Catálogo de plazas compartido y cacheado únicamente para la sesión actual.
- */
+
 @Injectable({providedIn:'root'})
 export class AviApiService {
   private readonly api = inject(ApiService);

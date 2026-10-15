@@ -13,7 +13,7 @@ export interface VentanaTiempo {
 
 const PERU_OFFSET = '-05:00';
 
-// Reutilizar Intl.DateTimeFormat evita construir uno por cada fila de la tabla.
+
 const HOUR_LABEL_FORMATTER = new Intl.DateTimeFormat('es-PE', {
   timeZone: 'America/Lima',
   hour: '2-digit',
@@ -99,11 +99,7 @@ export function ventanaOperativa(
   };
 }
 
-/**
- * Ventana del mes OPERATIVO: desde las 06:00 del día 1 hasta las 06:00
- * del día 1 del mes siguiente. Así se incluye completo el último turno C.
- * Usa fechas civiles de Lima y no la zona horaria del navegador.
- */
+
 export function ventanaMensualOperativa(mes: string): VentanaTiempo {
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) {
     throw new Error('Mes operativo inválido');
@@ -126,14 +122,14 @@ export function ventanaMensualOperativa(mes: string): VentanaTiempo {
 
   return {
     desde: `${firstDay}T06:00:00${PERU_OFFSET}`,
-    // El nuevo endpoint /consulta utiliza rango semiabierto [desde, hasta).
-    // Esto incluye el último milisegundo del turno C, sin incluir el siguiente mes.
+
+
     hasta: `${nextDay}T06:00:00${PERU_OFFSET}`,
     descripcion: `Mes operativo: ${label} · 06:00–06:00`
   };
 }
 
-/** Cantidad de jornadas operativas que forman un mes calendario. */
+
 export function diasDelMes(mes: string): number {
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) {
     return 0;
@@ -142,10 +138,7 @@ export function diasDelMes(mes: string): number {
   return new Date(Date.UTC(year, month, 0)).getUTCDate();
 }
 
-/**
- * Vista del gráfico: ocho franjas por turno o las 24 franjas cuando
- * se seleccionan todos. No modifica el filtro horario del Historial.
- */
+
 export function franjasDashboard(turno: TurnoFiltro): FranjaHoraria[] {
   if (turno !== 'TODOS') return franjasPorTurno(turno);
 
@@ -159,7 +152,7 @@ export function franjasDashboard(turno: TurnoFiltro): FranjaHoraria[] {
   return franjas;
 }
 
-/** A/B/C por la hora LOCAL de Lima; C comprende 22:00–05:59. */
+
 export function perteneceATurno(horaLima: number, turno: TurnoFiltro): boolean {
   if (turno === 'TODOS') return true;
   if (turno === 'A') return horaLima >= 6 && horaLima < 14;

@@ -4,9 +4,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AviPlazaConfig, AviRegistro } from '../core/operational-api.service';
-import { AuthService } from '../core/auth.service';
-import { AviApiService } from '../core/operational-api.service';
+import { AviPlazaConfig, AviRegistro } from '../registros/data/operational-api.service';
+import { AuthService } from '../../core/auth/auth.service';
+import { AviApiService } from '../registros/data/operational-api.service';
 import {
   contextoOperativoActual,
   dateTimeLabelFromIso,
@@ -17,7 +17,7 @@ import {
   TURNOS,
   ventanaMensualOperativa,
   ventanaOperativa
-} from '../core/turnos';
+} from '../../shared/utils/turnos';
 
 interface HourItem {
   label: string;
@@ -51,8 +51,7 @@ export class DashboardComponent implements OnInit {
   mes = this.fecha.slice(0, 7);
   turno: TurnoFiltro = contextoOperativoActual().turno;
 
-  // El filtro utiliza plazaId, disponible en la API de registros.
-  // El supervisor puede consultar todas; el resto conserva su plaza asignada.
+
   plazasDisponibles: AviPlazaConfig[] = [];
   plazaSeleccionada: number | null = null;
   puedeFiltrarPlazas = false;
@@ -87,7 +86,7 @@ export class DashboardComponent implements OnInit {
   porHora: HourItem[] = [];
 
   private readonly destroyRef = inject(DestroyRef);
-  // Se genera una única vista de zonas horarias y valores por renderizado de datos.
+
   private readonly plazaMap = new Map<number, AviPlazaConfig>();
   private registrosRequest?: Subscription;
   private readonly hourFormatter = new Intl.DateTimeFormat('en-US', {
@@ -101,8 +100,8 @@ export class DashboardComponent implements OnInit {
     private readonly auth: AuthService,
     private readonly cdr: ChangeDetectorRef
   ) {
-    // La API devuelve únicamente las plazas que el usuario tiene autorización para ver.
-    // El supervisor consulta todo; el controlador puede elegir entre sus plazas asignadas.
+
+
     this.puedeFiltrarPlazas = true;
     this.plazaSeleccionada = null;
   }
@@ -132,7 +131,7 @@ export class DashboardComponent implements OnInit {
   }
 
   private cargarPlazas(): void {
-    // El catálogo administrativo solo está autorizado para supervisores.
+
     if (!this.puedeFiltrarPlazas) return;
 
     this.api.listarPlazasConfiguracion()
@@ -144,8 +143,8 @@ export class DashboardComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: () => {
-          // Si falla el catálogo, permitir las plazas presentes en los
-          // registros autorizados sin bloquear el dashboard.
+
+
           this.errorPlazas = 'Catálogo de plazas no disponible; se muestran las plazas detectadas.';
           this.cdr.markForCheck();
         }
@@ -215,7 +214,7 @@ export class DashboardComponent implements OnInit {
   }
 
   cargar(): void {
-    // La última selección de fecha/turno es la única que debe actualizar la pantalla.
+
     this.registrosRequest?.unsubscribe();
 
     if (this.esMes && !/^\d{4}-(0[1-9]|1[0-2])$/.test(this.mes)) {
@@ -227,8 +226,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    // El mes se solicita como una única ventana completa y se filtra
-    // el turno localmente; un rango continuo A/B/C incluiría otros turnos.
+
     const ventana = this.esMes
       ? ventanaMensualOperativa(this.mes)
       : ventanaOperativa(this.fecha, this.turno);
@@ -243,8 +241,8 @@ export class DashboardComponent implements OnInit {
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (registros) => {
         this.loading = false;
-        // Cuando la consulta es mensual se agregan solamente las horas del
-        // turno indicado en Lima (C incluye 22–06 del día siguiente).
+
+
         const seleccion = this.esMes && this.turno !== 'TODOS'
           ? registros.filter((r) => perteneceATurno(
               this.horaLima(r.fechaHoraEvento), this.turno

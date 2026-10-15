@@ -7,9 +7,9 @@ import {
   AviAccion,
   AviRegistro,
   RegistroQuery
-} from '../core/operational-api.service';
-import { Cambio } from '../core/models';
-import { AviApiService } from '../core/operational-api.service';
+} from '../registros/data/operational-api.service';
+import { Cambio } from '../../core/models/avix.models';
+import { AviApiService } from '../registros/data/operational-api.service';
 import {
   contextoOperativoActual,
   FranjaHoraria,
@@ -17,7 +17,7 @@ import {
   TurnoFiltro,
   TURNOS,
   ventanaOperativa
-} from '../core/turnos';
+} from '../../shared/utils/turnos';
 
 @Component({
   selector: 'app-historial',
@@ -73,12 +73,12 @@ export class HistorialComponent implements OnInit {
   ngOnInit(): void {
     this.cargar();
 
-    // Una sola suscripción durante la vida de la pantalla; se libera al salir.
+
     timer(10_000, 10_000)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        // Evita consultas innecesarias cuando la pestaña no está visible y
-        // no altera el historial mientras se edita o guarda un registro.
+
+
         if (
           !this.autoActualizar ||
           this.editing != null ||
@@ -107,7 +107,7 @@ export class HistorialComponent implements OnInit {
 
   get registrosFiltrados(): AviRegistro[] {
     const search = this.buscarPlaca.trim().toUpperCase();
-    // Evita filtrar nuevamente en cada evaluación de la plantilla.
+
     if (this.filtroOrigen !== this.registros || this.filtroTexto !== search) {
       this.filtroOrigen = this.registros;
       this.filtroTexto = search;
@@ -167,8 +167,7 @@ export class HistorialComponent implements OnInit {
     this.ventanaDescripcion = window.descripcion;
     const parsedVia = Number(this.via);
 
-    // El temporizador reutiliza únicamente los filtros ya aplicados,
-    // sin incluir cambios que el usuario todavía esté escribiendo.
+
     const query: RegistroQuery = {
       desde: window.desde,
       hasta: window.hasta,
@@ -183,8 +182,8 @@ export class HistorialComponent implements OnInit {
   }
 
   private consultarRegistros(query: RegistroQuery, automatico: boolean): void {
-    // Si una actualización anterior sigue activa, esperar al próximo ciclo.
-    // En cambio, "Aplicar filtros" puede cancelar una consulta obsoleta.
+
+
     if (automatico && this.registrosRequest && !this.registrosRequest.closed) {
       return;
     }
@@ -209,8 +208,8 @@ export class HistorialComponent implements OnInit {
               new Date(b.fechaHoraEvento).getTime() -
               new Date(a.fechaHoraEvento).getTime()
           );
-          // Si cambian los resultados del servidor, conservar la página
-          // actual siempre que siga existiendo (también en el refresco de 10 s).
+
+
           this.paginaActual = Math.min(this.paginaActual, this.totalPaginas);
           this.ultimaActualizacion = new Date().toLocaleTimeString('es-PE', {
             timeZone: 'America/Lima',
@@ -223,8 +222,8 @@ export class HistorialComponent implements OnInit {
         error: (error) => {
           this.loading = false;
           this.actualizandoEnSegundoPlano = false;
-          // Mantener en pantalla los últimos registros correctos si falla
-          // una actualización de fondo; se reintentará en 10 segundos.
+
+
           this.error = error?.error?.mensaje ?? error?.message ??
             'No se pudo actualizar el historial en AVIX. Se reintentará automáticamente.';
           this.cdr.markForCheck();

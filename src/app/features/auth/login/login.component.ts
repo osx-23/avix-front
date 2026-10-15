@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthService } from '../core/auth.service';
+import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({standalone:true,imports:[CommonModule,FormsModule],templateUrl:'./login.component.html'})
 export class LoginComponent {
