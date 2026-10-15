@@ -225,7 +225,7 @@ export class HistorialComponent implements OnInit {
           this.actualizandoEnSegundoPlano = false;
           // Mantener en pantalla los últimos registros correctos si falla
           // una actualización de fondo; se reintentará en 10 segundos.
-          this.error = error?.error?.mensaje ??
+          this.error = error?.error?.mensaje ?? error?.message ??
             'No se pudo actualizar el historial en AVIX. Se reintentará automáticamente.';
           this.cdr.markForCheck();
         }

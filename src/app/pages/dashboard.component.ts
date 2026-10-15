@@ -87,6 +87,8 @@ export class DashboardComponent implements OnInit {
   porHora: HourItem[] = [];
 
   private readonly destroyRef = inject(DestroyRef);
+  // Se genera una única vista de zonas horarias y valores por renderizado de datos.
+  private readonly plazaMap = new Map<number, AviPlazaConfig>();
   private registrosRequest?: Subscription;
   private readonly hourFormatter = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Lima',
@@ -273,7 +275,7 @@ export class DashboardComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         this.error =
-          error?.error?.message ??
+          error?.error?.mensaje ?? error?.message ??
           'No se pudo cargar el dashboard de AVIX.';
         this.cdr.markForCheck();
       }

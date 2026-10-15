@@ -27,6 +27,12 @@ export class ApiService {
   registros(filters: {page: number; size: number; plaza?: string; accion?: string; fecha?: string}): Observable<Registro[]> {
     return this.http.get<Registro[]>(API + '/registros', {params: this.params(filters)});
   }
+  registrosRango(filters: {
+    page: number; size: number; desde: string; hasta: string;
+    plaza?: string; accion?: string; via?: number;
+  }): Observable<Registro[]> {
+    return this.http.get<Registro[]>(API + '/registros/consulta', {params: this.params(filters)});
+  }
   registro(id: string) { return this.http.get<Registro>(API + '/registros/' + encodeURIComponent(id)); }
   auditoria(id: string) { return this.http.get<Cambio[]>(API + '/registros/' + encodeURIComponent(id) + '/auditoria'); }
   editarRegistro(id: string, cambios: Record<string, unknown>, motivo: string) {
