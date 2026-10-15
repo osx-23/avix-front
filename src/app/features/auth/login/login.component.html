@@ -1,30 +1,141 @@
-<main class="login-screen">
-  <div class="login-intro">
-    <div class="brand brand-lg"><span class="brand-symbol">△</span> AVIX</div>
-    <div class="login-hero">
-      <span class="eyebrow light">PLATAFORMA DE MONITOREO</span>
-      <h1>Control operativo.<br><span>Información al instante.</span></h1>
-      <p>Consulta los registros de vías, supervisa las operaciones y administra el equipo desde una sola plataforma.</p>
+<main class="min-h-dvh bg-[#f6f9fd] font-sans text-slate-900 lg:grid lg:grid-cols-[minmax(0,45%)_minmax(0,55%)]">
+  <section class="relative hidden min-h-dvh items-center justify-center overflow-hidden bg-[#071e3d] lg:flex" aria-label="AVIX, registro de incidencias en tiempo real">
+    <img
+      src="/avix-login-panel.avif"
+      alt="AVIX. Registro de incidencias en tiempo real, peaje Lima Expresa, registro por voz, información confiable y monitoreo operativo."
+      width="700"
+      height="933"
+      fetchpriority="high"
+      class="block h-dvh max-h-[1200px] w-full object-contain"
+    />
+  </section>
+
+  <section class="relative isolate overflow-hidden bg-[#082443] px-6 py-7 text-white lg:hidden" aria-label="Presentación de AVIX">
+    <img src="/avix-login-panel.avif" alt="" width="700" height="933"
+         class="absolute inset-0 -z-20 h-full w-full object-cover object-[center_58%] opacity-35"/>
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-[#05213f]/95 via-[#082a50]/80 to-[#06457b]/70"></div>
+    <div class="mx-auto flex max-w-md items-center gap-4">
+      <img src="/avix-logo.webp" alt="Logotipo original de AVIX" width="76" height="76"
+           class="h-[76px] w-[76px] shrink-0 rounded-2xl bg-white object-contain p-1 shadow-xl shadow-black/20"/>
+      <div>
+        <p class="m-0 text-[11px] font-extrabold uppercase tracking-[0.19em] text-sky-200">AVIX WEB</p>
+        <p class="mt-2 text-lg font-bold leading-snug text-white">Registro de incidencias<br/>en tiempo real</p>
+      </div>
     </div>
-    <div class="login-legal">AVIX · Sistema independiente de SIGO</div>
-  </div>
-  <div class="login-form-side">
-    <div class="login-card">
-      <div class="top-accent"></div>
-      <span class="eyebrow">ACCESO A AVIX WEB</span>
-      <h2>Bienvenido</h2>
-      <p class="muted">Ingresa con tu código y contraseña.</p>
-      <form (ngSubmit)="ingresar()" #form="ngForm">
-        <label for="codigo">Código de usuario</label>
-        <input id="codigo" name="codigo" [(ngModel)]="codigo" required placeholder="Ej. CTRL001" autocomplete="username" [disabled]="cargando" maxlength="30" />
-        <label for="pass">Contraseña</label>
-        <input id="pass" name="pass" [(ngModel)]="contrasena" required type="password" placeholder="Tu contraseña" autocomplete="current-password" [disabled]="cargando"/>
-        <div class="alert alert-error" *ngIf="error">{{error}}</div>
-        <button class="btn btn-primary full-width" type="submit" [disabled]="form.invalid || cargando">
-          {{cargando ? 'Validando acceso…' : 'Ingresar al sistema'}}
-        </button>
-      </form>
-      <p class="muted footnote">Acceso web exclusivo para controladores y supervisores.</p>
+  </section>
+
+  <section class="relative isolate flex min-h-[calc(100dvh-130px)] items-center justify-center overflow-hidden bg-gradient-to-br from-white via-white to-sky-50/70 px-5 py-10 sm:px-10 lg:min-h-dvh lg:px-14 xl:px-20">
+    <div class="pointer-events-none absolute -right-32 -top-32 -z-10 h-96 w-96 rounded-full bg-sky-100/70 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-48 -left-28 -z-10 h-96 w-96 rounded-full bg-blue-100/50 blur-3xl"></div>
+
+    <div class="w-full max-w-[450px]">
+      <div class="mb-8 hidden items-center gap-4 lg:flex">
+        <img src="/avix-logo.webp" alt="AVIX" width="76" height="76"
+             class="h-[76px] w-[76px] rounded-2xl border border-slate-100 bg-white object-contain p-1 shadow-sm"/>
+        <div>
+          <p class="m-0 text-[11px] font-extrabold uppercase tracking-[0.17em] text-sky-600">AVIX · PLATAFORMA OPERATIVA</p>
+          <p class="mt-2 text-[13px] font-medium text-slate-500">Monitoreo y control en tiempo real</p>
+        </div>
+      </div>
+
+      <div class="rounded-[26px] border border-slate-200/80 bg-white px-6 py-8 shadow-[0_25px_75px_-32px_rgba(10,38,78,0.28)] sm:px-9 sm:py-10">
+        <div class="mb-7">
+          <span class="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-sky-700">
+            <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
+            Acceso operativo
+          </span>
+          <h1 class="mb-3 mt-5 text-[32px] font-extrabold leading-[1.12] tracking-[-0.04em] text-[#0b2342] sm:text-[38px]">
+            Bienvenido a AVIX
+          </h1>
+          <p class="m-0 text-sm leading-6 text-slate-500">
+            Ingresa tu código de usuario y contraseña para acceder al panel de monitoreo.
+          </p>
+        </div>
+
+        <form class="space-y-5" (ngSubmit)="ingresar()" #loginForm="ngForm">
+          <div>
+            <label for="avix-codigo" class="mb-2 block text-[13px] font-bold text-slate-700">Código de usuario</label>
+            <div class="group relative">
+              <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-sky-600"
+                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.5a7 7 0 0 1 14 0V20"/>
+              </svg>
+              <input id="avix-codigo" name="codigo" type="text" [(ngModel)]="codigo"
+                     autocomplete="username" autocapitalize="characters" maxlength="30" minlength="3"
+                     required placeholder="Ej. CTRL001" [disabled]="cargando()"
+                     class="h-[54px] w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-12 pr-4 text-[14px] font-medium text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div class="mb-2 flex items-center justify-between">
+              <label for="avix-pass" class="m-0 text-[13px] font-bold text-slate-700">Contraseña</label>
+              <span class="text-[11px] font-medium text-slate-400">Acceso web seguro</span>
+            </div>
+            <div class="group relative">
+              <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-sky-600"
+                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/>
+              </svg>
+              <input id="avix-pass" name="contrasena" [type]="mostrarContrasena() ? 'text' : 'password'"
+                     [(ngModel)]="contrasena" autocomplete="current-password" required
+                     placeholder="Ingresa tu contraseña" [disabled]="cargando()"
+                     class="h-[54px] w-full rounded-xl border border-slate-200 bg-slate-50/70 pl-12 pr-[88px] text-[14px] font-medium text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
+              />
+              <button type="button" (click)="mostrarContrasena.update(valor => !valor)"
+                      [attr.aria-label]="mostrarContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                      [attr.aria-pressed]="mostrarContrasena()"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg px-2.5 py-2 text-[12px] font-bold text-sky-700 transition hover:bg-sky-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500">
+                {{ mostrarContrasena() ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </div>
+          </div>
+
+          @if (error()) {
+            <div role="alert" class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-[13px] font-medium leading-5 text-rose-700">
+              {{ error() }}
+            </div>
+          }
+
+          <button type="submit" [disabled]="loginForm.invalid || cargando()"
+                  [attr.aria-busy]="cargando()"
+                  class="mt-2 flex h-[55px] w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#095de2] to-[#078bed] px-5 text-[14px] font-extrabold text-white shadow-lg shadow-blue-600/20 transition duration-200 hover:-translate-y-0.5 hover:shadow-blue-600/30 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-sky-500 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-60">
+            @if (cargando()) {
+              <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"/>
+              </svg>
+              Verificando acceso...
+            } @else {
+              Ingresar al sistema
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6"/>
+              </svg>
+            }
+          </button>
+        </form>
+
+        <div class="mt-7 flex items-start gap-3 rounded-xl border border-sky-100 bg-sky-50/80 px-4 py-4">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-white text-sky-700 shadow-sm">
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
+              <path d="m12 2 8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4Z"/><path d="m8.5 12 2.3 2.3 4.7-4.8"/>
+            </svg>
+          </div>
+          <div>
+            <p class="m-0 text-[12px] font-extrabold text-[#183a61]">Acceso protegido</p>
+            <p class="mb-0 mt-1 text-[12px] leading-5 text-slate-500">Disponible únicamente para controladores y supervisores autorizados.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="mb-0 mt-6 text-center text-[11px] font-medium tracking-wide text-slate-400">
+        AVIX Web · Sistema de registro y monitoreo operativo
+      </p>
     </div>
-  </div>
+  </section>
 </main>

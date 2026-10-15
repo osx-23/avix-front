@@ -1,4 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
+@layer theme, base, legacy, components, utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-avix-navy: #0b2342;
+  --color-avix-blue: #0874f4;
+  --color-avix-cyan: #20b7f2;
+  --font-sans: "DM Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer legacy {
 :root{
   font-family:'DM Sans',Arial,sans-serif;color:#202a42;background:#f5f7fb;
   font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;
@@ -287,3 +298,5 @@ a {
   }
 }
 
+
+}
