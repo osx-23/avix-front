@@ -1,0 +1,229 @@
+<section class="page-header">
+  <div>
+    <span class="eyebrow">ADMINISTRACIÓN</span>
+    <h1>Usuarios y accesos</h1>
+    <p class="muted">Agentes en Android; controladores y supervisores acceden a AVIX Web con contraseña.</p>
+  </div>
+  <button class="btn btn-secondary" type="button" (click)="store.cargar()" [disabled]="store.cargando()">
+    ↻ Actualizar usuarios
+  </button>
+</section>
+
+@if (store.error()) {
+  <div class="alert alert-error" role="alert">
+    {{store.error()}}
+    <button type="button" class="close-alert" (click)="store.error.set('')" aria-label="Cerrar error">×</button>
+  </div>
+}
+@if (errorFormulario()) {
+  <div class="alert alert-error" role="alert">
+    {{errorFormulario()}}
+    <button type="button" class="close-alert" (click)="errorFormulario.set('')" aria-label="Cerrar error">×</button>
+  </div>
+}
+@if (store.exito()) {
+  <div class="alert alert-success" role="status">{{store.exito()}}</div>
+}
+
+<div class="two-column">
+  <section class="content-card">
+    <div class="card-header">
+      <div><h2>Nuevo usuario</h2><p class="muted">Crear una cuenta operativa en AVIX</p></div>
+    </div>
+    <form class="stack-form" (ngSubmit)="crear()" #altaForm="ngForm">
+      <label for="usuario-codigo">Código</label>
+      <input id="usuario-codigo" name="codigo" [(ngModel)]="nuevo.codigo"
+             required minlength="3" maxlength="30" autocomplete="off" placeholder="Ej. AG001"/>
+      <label for="usuario-nombres">Nombres</label>
+      <input id="usuario-nombres" name="nombres" [(ngModel)]="nuevo.nombres"
+             required maxlength="120" placeholder="Nombre completo"/>
+      <label for="usuario-apellidos">Apellidos</label>
+      <input id="usuario-apellidos" name="apellidos" [(ngModel)]="nuevo.apellidos" maxlength="120"/>
+      <label for="usuario-rol">Puesto / rol</label>
+      <select id="usuario-rol" name="rol" [(ngModel)]="nuevo.rol" required>
+        <option value="AGENTE">Agente</option>
+        <option value="CONTROLADOR">Controlador</option>
+        <option value="SUPERVISOR">Supervisor</option>
+      </select>
+      @if (nuevo.rol !== 'AGENTE') {
+        <label for="usuario-contrasena">Contraseña web (mínimo 10 caracteres)</label>
+        <input id="usuario-contrasena" name="contrasena" type="password"
+               [(ngModel)]="nuevo.contrasena" autocomplete="new-password"
+               required minlength="10"/>
+      } @else {
+        <p class="hint">Los agentes ingresan a Android con su código; no necesitan contraseña.</p>
+      }
+      <button class="btn btn-primary" type="submit" [disabled]="store.guardando() || altaForm.invalid">
+        {{store.guardando() ? 'Guardando…' : 'Crear usuario'}}
+      </button>
+    </form>
+  </section>
+
+  <section class="content-card">
+    <div class="card-header">
+      <div>
+        <h2>Usuarios registrados</h2>
+        <p class="muted">Los usuarios activos se cargan automáticamente al abrir esta pantalla.</p>
+      </div>
+      @if (store.cargando()) {
+        <span class="usuarios-loading" role="status">Actualizando…</span>
+      }
+    </div>
+
+    <div class="usuarios-filtros">
+      <div>
+        <label for="filtro-estado">Estado</label>
+        <select id="filtro-estado" [ngModel]="store.filtroEstado()"
+                (ngModelChange)="cambiarFiltroEstado($event)">
+          <option value="ACTIVOS">Activos</option>
+          <option value="INACTIVOS">Inactivos</option>
+          <option value="TODOS">Todos</option>
+        </select>
+      </div>
+      <div>
+        <label for="filtro-rol">Puesto / rol</label>
+        <select id="filtro-rol" [ngModel]="store.filtroRol()"
+                (ngModelChange)="cambiarFiltroRol($event)">
+          <option value="">Todos los puestos</option>
+          <option value="AGENTE">Agentes</option>
+          <option value="CONTROLADOR">Controladores</option>
+          <option value="SUPERVISOR">Supervisores</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="usuarios-resultados" aria-live="polite">
+      <span>Mostrando <strong>{{store.usuarios().length}}</strong> usuario(s) en esta página</span>
+      <span class="usuarios-estados">
+        <span class="usuarios-dot activo"></span> {{store.activosPagina()}} activos
+        <span class="usuarios-dot inactivo"></span> {{store.inactivosPagina()}} inactivos
+      </span>
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr><th>Código</th><th>Nombre completo</th><th>Puesto</th><th>Estado</th><th>Gestión</th></tr>
+        </thead>
+        <tbody>
+          @for (usuario of store.usuarios(); track usuario.id) {
+            <tr>
+              <td><strong>{{usuario.codigo}}</strong></td>
+              <td>{{usuario.nombres}} {{usuario.apellidos || ''}}</td>
+              <td>{{usuario.rol}}</td>
+              <td>
+                <span class="pill" [ngClass]="usuario.activo ? 'active-pill' : 'inactive-pill'">
+                  {{usuario.activo ? 'Activo' : 'Inactivo'}}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-small btn-secondary" type="button" (click)="seleccionar(usuario)">
+                  Gestionar
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            @if (store.cargando()) {
+              <tr><td colspan="5" class="empty-cell">Cargando usuarios desde AVIX…</td></tr>
+            } @else {
+              <tr>
+                <td colspan="5" class="empty-cell">
+                  No hay usuarios para los filtros seleccionados.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="usuarios-paginacion">
+      <button class="btn btn-secondary" type="button" (click)="store.retroceder()"
+              [disabled]="store.cargando() || store.pagina() === 0">← Anterior</button>
+      <span>Página {{store.pagina() + 1}}</span>
+      <button class="btn btn-secondary" type="button" (click)="store.avanzar()"
+              [disabled]="store.cargando() || !store.haySiguiente()">Siguiente →</button>
+    </div>
+  </section>
+</div>
+
+@if (store.seleccionado(); as usuario) {
+  <section class="content-card user-detail">
+    <div class="card-header">
+      <div>
+        <span class="eyebrow">CONFIGURACIÓN DE USUARIO</span>
+        <h2>{{usuario.codigo}} · {{usuario.nombres}}</h2>
+        <p class="muted">Puesto: {{usuario.rol}} · Estado: {{usuario.activo ? 'Activo' : 'Inactivo'}}</p>
+      </div>
+      <button class="icon-button" type="button" (click)="store.cerrarDetalle()" aria-label="Cerrar">×</button>
+    </div>
+    <div class="two-column">
+      <div class="usuarios-panel">
+        <h3>Datos y permisos</h3>
+        <div class="stack-form">
+          <label for="editar-nombres">Nombres</label>
+          <input id="editar-nombres" [(ngModel)]="editor.nombres" maxlength="120"/>
+          <label for="editar-apellidos">Apellidos</label>
+          <input id="editar-apellidos" [(ngModel)]="editor.apellidos" maxlength="120"/>
+          <label for="editar-rol">Puesto / rol</label>
+          <select id="editar-rol" [(ngModel)]="editor.rol">
+            <option value="AGENTE">Agente</option>
+            <option value="CONTROLADOR">Controlador</option>
+            <option value="SUPERVISOR">Supervisor</option>
+          </select>
+          <label for="editar-clave">Nueva contraseña web</label>
+          <input id="editar-clave" type="password" [(ngModel)]="editor.contrasena"
+                 autocomplete="new-password" placeholder="Dejar vacío si no cambia"/>
+          @if (usuario.rol === 'AGENTE' && editor.rol !== 'AGENTE') {
+            <p class="hint">Para pasar de agente a un puesto con acceso web, asigna una contraseña.</p>
+          }
+          <div class="button-row">
+            <button class="btn btn-primary" type="button" (click)="guardar()"
+                    [disabled]="store.guardando()">Guardar cambios</button>
+            <button class="btn" type="button" [ngClass]="usuario.activo ? 'btn-danger' : 'btn-secondary'"
+                    (click)="cambiarEstado(usuario)" [disabled]="store.guardando()">
+              {{usuario.activo ? 'Desactivar' : 'Activar'}} usuario
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="usuarios-panel">
+        <h3>Plazas asignadas</h3>
+        <div class="filter-inline">
+          <select aria-label="Seleccionar plaza" [ngModel]="plazaPorDefecto"
+                  (ngModelChange)="plazaSeleccionada=$event">
+            @for (plaza of store.plazas(); track plaza.id) {
+              <option [value]="plaza.codigo">{{plaza.codigo}}</option>
+            }
+          </select>
+          <button class="btn btn-primary" type="button" (click)="asignarPlaza()"
+                  [disabled]="store.guardando() || !plazaPorDefecto || store.cargandoPlazas()">
+            Asignar plaza
+          </button>
+        </div>
+
+        @if (store.errorAsignaciones()) {
+          <div class="alert alert-error">{{store.errorAsignaciones()}}</div>
+        }
+        @if (store.cargandoAsignaciones()) {
+          <p class="muted">Consultando plazas asignadas…</p>
+        }
+        @for (asignacion of store.asignaciones(); track asignacion.plaza_id) {
+          <div class="assignment">
+            <strong>{{asignacion.plazas?.codigo || asignacion.plaza_id}}</strong>
+            <span class="pill" [ngClass]="asignacion.activa ? 'active-pill' : 'inactive-pill'">
+              {{asignacion.activa ? 'Activa' : 'Inactiva'}}
+            </span>
+            <button class="btn btn-small btn-secondary" type="button"
+                    (click)="cambiarAsignacion(asignacion)" [disabled]="store.guardando()">
+              {{asignacion.activa ? 'Desactivar' : 'Activar'}}
+            </button>
+          </div>
+        } @empty {
+          @if (!store.cargandoAsignaciones() && !store.errorAsignaciones()) {
+            <p class="muted">Este usuario no tiene plazas asignadas.</p>
+          }
+        }
+      </div>
+    </div>
+  </section>
+}

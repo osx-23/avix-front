@@ -11,8 +11,8 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', loadComponent: () => import('./pages/dashboard.component').then(c => c.DashboardComponent) },
       { path: 'historial', loadComponent: () => import('./pages/historial.component').then(c => c.HistorialComponent) },
-      { path: 'vias', canActivate: [supervisorGuard], loadComponent: () => import('./pages/vias.component').then(c => c.ViasComponent) },
-      { path: 'usuarios', canActivate: [supervisorGuard], loadComponent: () => import('./pages/usuarios.component').then(c => c.UsuariosComponent) }
+      { path: 'vias', canActivate: [supervisorGuard], loadComponent: () => import('./features/vias/vias.component').then(c => c.ViasComponent) },
+      { path: 'usuarios', canActivate: [supervisorGuard], loadComponent: () => import('./features/usuarios/usuarios.component').then(c => c.UsuariosComponent) }
     ]
   },
   { path: '**', redirectTo: '' }

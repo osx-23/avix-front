@@ -42,8 +42,10 @@ export class ApiService {
     return this.http.patch<Registro>(API + '/registros/' + encodeURIComponent(id) + '/anular', {motivo});
   }
 
-  usuarios(page = 0, size = 50) {
-    return this.http.get<Usuario[]>(API + '/admin/usuarios', {params: this.params({page,size})});
+  usuarios(page = 0, size = 50, rol?: string, activo?: boolean) {
+    return this.http.get<Usuario[]>(API + '/admin/usuarios', {
+      params: this.params({page,size,rol,activo})
+    });
   }
   crearUsuario(data: Record<string, unknown>) { return this.http.post<unknown>(API + '/admin/usuarios',data); }
   actualizarUsuario(id: string, data: Record<string, unknown>) {

@@ -1,0 +1,20 @@
+:host { display:block; }
+.usuarios-filtros { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+  padding:15px 0 18px;border-bottom:1px solid #edf0f5; }
+.usuarios-filtros select { width:100%; }
+.usuarios-resultados {display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:15px 0 11px;color:#68778d;font-size:12px;flex-wrap:wrap}
+.usuarios-resultados strong{color:#1e365f}
+.usuarios-estados{display:flex;align-items:center;gap:7px}
+.usuarios-dot{display:inline-block;border-radius:50%;width:7px;height:7px}
+.usuarios-dot.activo{background:#26a06a}
+.usuarios-dot.inactivo{background:#ce6171;margin-left:10px}
+.usuarios-paginacion{display:flex;align-items:center;justify-content:flex-end;gap:16px;
+  padding-top:17px;color:#68778d;font-size:12px}
+.usuarios-loading{display:inline-flex;align-items:center;color:#2563eb;font-size:12px;font-weight:700}
+.usuarios-panel{min-width:0}
+.usuarios-panel .stack-form input,.usuarios-panel .stack-form select{margin-bottom:14px}
+.usuarios-panel .stack-form .button-row .btn{align-self:center}
+.usuarios-panel .stack-form .button-row{margin-top:12px}
+@media(max-width:690px){.usuarios-filtros{grid-template-columns:1fr}
+  .usuarios-paginacion{justify-content:space-between;gap:9px}}
