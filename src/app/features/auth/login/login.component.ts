@@ -8,7 +8,8 @@ import { AuthService } from '../../../core/auth/auth.service';
 @Component({
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css'
 })
 export class LoginComponent {
   private readonly auth = inject(AuthService);

@@ -1,0 +1,577 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.avix-login {
+  display: grid;
+  grid-template-columns: minmax(0, min(43vw, 75dvh)) minmax(0, 1fr);
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  font-family: "DM Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.avix-login-visual {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  place-items: center;
+  overflow: hidden;
+  background: #071e3d;
+}
+
+.avix-login-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.avix-login-body {
+  min-width: 0;
+  min-height: 0;
+  background: linear-gradient(145deg, #ffffff 0%, #ffffff 63%, #eff7ff 100%);
+}
+
+.avix-login-mobile-hero {
+  display: none;
+}
+
+.avix-login-form-area {
+  display: flex;
+  align-items: safe center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(20px, 3vh, 42px) clamp(24px, 5vw, 90px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+
+.avix-login-content {
+  flex: 0 1 440px;
+  width: 100%;
+  min-width: 0;
+  margin: auto;
+}
+
+.avix-login-desktop-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: clamp(16px, 3vh, 32px);
+}
+
+.avix-login-desktop-brand img,
+.avix-login-mobile-brand img {
+  display: block;
+  flex: none;
+  width: 68px;
+  height: 68px;
+  padding: 3px;
+  border: 1px solid #e7edf6;
+  border-radius: 17px;
+  background: #fff;
+  object-fit: contain;
+  box-shadow: 0 7px 22px rgb(12 42 83 / 7%);
+}
+
+.avix-login-desktop-brand span {
+  display: block;
+  color: #0b6cc5;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .16em;
+}
+
+.avix-login-desktop-brand p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.avix-login-card {
+  min-width: 0;
+  padding: clamp(20px, 3vw, 36px);
+  border: 1px solid #e3eaf3;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 22px 65px -30px rgb(10 37 78 / 24%);
+}
+
+.avix-login-card-head {
+  margin-bottom: clamp(19px, 3vh, 29px);
+}
+
+.avix-login-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #eff8ff;
+  color: #0364b6;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.avix-login-eyebrow span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #15a5eb;
+}
+
+.avix-login-card-head h1 {
+  margin: 18px 0 9px;
+  color: #0b2342;
+  font-family: "Manrope", "DM Sans", sans-serif;
+  font-size: clamp(25px, 2.45vw, 37px);
+  font-weight: 850;
+  line-height: 1.14;
+  letter-spacing: -.045em;
+  overflow-wrap: break-word;
+}
+
+.avix-login-card-head p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.avix-login-form {
+  display: grid;
+  gap: 17px;
+}
+
+.avix-login-field {
+  min-width: 0;
+}
+
+.avix-login-field > label,
+.avix-login-field-head label {
+  display: block;
+  margin: 0 0 8px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.avix-login-field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.avix-login-field-head > span {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.avix-login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 52px;
+  border: 1px solid #d5e0ed;
+  border-radius: 12px;
+  background: #f8fbff;
+  transition: border-color .15s, box-shadow .15s, background-color .15s;
+}
+
+.avix-login-input-wrap:focus-within {
+  border-color: #0874f4;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgb(8 116 244 / 11%);
+}
+
+.avix-login-input-wrap > svg {
+  display: block;
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+  margin-left: 15px;
+  color: #94a3b8;
+}
+
+.avix-login-input-wrap:focus-within > svg {
+  color: #0874f4;
+}
+
+.avix-login-input-wrap input {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 550;
+}
+
+.avix-login-input-wrap input:focus {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
+.avix-login-input-wrap input::placeholder {
+  color: #9ba9ba;
+  font-size: 13px;
+}
+
+.avix-login-input-wrap input.avix-login-password {
+  padding-right: 75px;
+}
+
+.avix-login-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  transform: translateY(-50%);
+  min-width: 64px;
+  height: 36px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #0862bb;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.avix-login-password-toggle:hover {
+  background: #eaf5ff;
+}
+
+.avix-login-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(100deg, #095de2, #078bed);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 850;
+  box-shadow: 0 9px 18px rgb(4 102 220 / 17%);
+  transition: transform .15s, box-shadow .15s;
+}
+
+.avix-login-submit svg {
+  display: block;
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+}
+
+.avix-login-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgb(4 102 220 / 25%);
+}
+
+.avix-login-submit:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.avix-login-error {
+  padding: 12px 14px;
+  border: 1px solid #fecdd3;
+  border-radius: 10px;
+  background: #fff1f2;
+  color: #9f1239;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.avix-login-security {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 21px;
+  padding: 13px 14px;
+  border: 1px solid #dceeff;
+  border-radius: 13px;
+  background: #f0f8ff;
+}
+
+.avix-login-shield {
+  display: grid;
+  flex: 0 0 34px;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: white;
+  color: #0874f4;
+}
+
+.avix-login-shield svg {
+  width: 19px;
+  height: 19px;
+}
+
+.avix-login-security strong,
+.avix-login-security span {
+  display: block;
+}
+
+.avix-login-security strong {
+  color: #183a61;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.avix-login-security span {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.avix-login-footnote {
+  margin: 16px 0 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  .avix-login {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .avix-login-visual {
+    display: none;
+  }
+
+  .avix-login-body {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .avix-login-mobile-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: clamp(150px, 24dvh, 218px);
+    min-height: 150px;
+    padding: max(16px, env(safe-area-inset-top)) clamp(16px, 5vw, 36px) 16px;
+    overflow: hidden;
+    isolation: isolate;
+    background: #0b2342;
+  }
+
+  .avix-login-mobile-photo {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 72%;
+    opacity: .55;
+  }
+
+  .avix-login-mobile-hero::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(5 25 53 / 95%), rgb(7 45 87 / 75%) 75%, rgb(4 55 101 / 65%));
+  }
+
+  .avix-login-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: clamp(11px, 3vw, 18px);
+    width: min(100%, 460px);
+    margin: 0 auto;
+  }
+
+  .avix-login-mobile-brand img {
+    flex-basis: 66px;
+    width: 66px;
+    height: 66px;
+    border-radius: 14px;
+  }
+
+  .avix-login-mobile-brand span,
+  .avix-login-mobile-brand strong {
+    display: block;
+  }
+
+  .avix-login-mobile-brand span {
+    color: #a6dcff;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: .14em;
+  }
+
+  .avix-login-mobile-brand strong {
+    margin-top: 5px;
+    color: #fff;
+    font-size: clamp(15px, 3.2vw, 20px);
+    font-weight: 850;
+    line-height: 1.38;
+  }
+
+  .avix-login-form-area {
+    align-items: flex-start;
+    height: auto;
+    min-height: 0;
+    padding: clamp(16px, 3.5vw, 32px) clamp(13px, 4vw, 36px) max(24px, env(safe-area-inset-bottom));
+    overflow: visible;
+  }
+
+  .avix-login-content {
+    flex: 0 1 460px;
+    margin: 0 auto;
+  }
+
+  .avix-login-desktop-brand {
+    display: none;
+  }
+
+  .avix-login-card {
+    border-radius: 20px;
+    padding: clamp(20px, 4vw, 32px);
+  }
+
+  .avix-login-card-head h1 {
+    font-size: clamp(25px, 5vw, 34px);
+  }
+}
+
+@media (min-width: 961px) and (max-height: 760px) {
+  .avix-login-form-area {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .avix-login-desktop-brand {
+    margin-bottom: 13px;
+  }
+
+  .avix-login-desktop-brand img {
+    width: 51px;
+    height: 51px;
+    border-radius: 12px;
+  }
+
+  .avix-login-card {
+    padding: 22px 27px;
+  }
+
+  .avix-login-card-head {
+    margin-bottom: 15px;
+  }
+
+  .avix-login-card-head h1 {
+    margin-top: 11px;
+    font-size: 27px;
+  }
+
+  .avix-login-form {
+    gap: 11px;
+  }
+
+  .avix-login-input-wrap {
+    height: 46px;
+  }
+
+  .avix-login-submit {
+    min-height: 46px;
+  }
+
+  .avix-login-security {
+    margin-top: 13px;
+    padding: 10px 12px;
+  }
+
+  .avix-login-footnote {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 960px) and (orientation: landscape) and (max-height: 550px) {
+  .avix-login-mobile-hero {
+    height: 105px;
+    min-height: 105px;
+  }
+
+  .avix-login-mobile-brand img {
+    flex-basis: 53px;
+    width: 53px;
+    height: 53px;
+  }
+
+  .avix-login-mobile-brand strong {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 359px) {
+  .avix-login-card {
+    padding: 19px 15px;
+    border-radius: 15px;
+  }
+
+  .avix-login-mobile-brand img {
+    flex-basis: 55px;
+    width: 55px;
+    height: 55px;
+  }
+
+  .avix-login-security {
+    padding: 11px 10px;
+  }
+
+  .avix-login-field-head > span {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avix-login-input-wrap,
+  .avix-login-submit {
+    transition: none;
+  }
+
+  .avix-login-submit:hover:not(:disabled) {
+    transform: none;
+  }
+}
